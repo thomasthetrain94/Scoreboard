@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Collect all the Scoreboard Client classes in this file. Note that this file
@@ -14,6 +15,7 @@ public class ScoreboardClient implements Runnable {
     private ScoreboardClient master;
     //Interact with the questions from the challenge Response
     private ArrayList<ChallengeResponseGame> games;
+    private ChallengeResponseGame currentGame = null;
 
     ScoreboardClient(BufferedReader input, PrintWriter output, ArrayList<ChallengeResponseGame> games) {
         this.input = input;
@@ -52,9 +54,9 @@ public class ScoreboardClient implements Runnable {
                         //The available games
                         this.master.output.println("crypto \n networking");
                         //Choosing the which game to play
-                        gameChoice = this.master.input.readLine();
+                        gameChoice = this.master.input.readLine().toLowerCase();
                         //the currentGame is created with the games array at that array
-                        ChallengeResponseGame currentGame = null;
+
                         for (ChallengeResponseGame game : this.games) {
                             if (game.gameId.equals(gameChoice)) {
                                 currentGame = game;
@@ -78,12 +80,20 @@ public class ScoreboardClient implements Runnable {
                         }
                         break;
                     case "scoreboard":
-                        this.master.output.println("Print ScareBird");
 
-                        //Converts the input to the index of game where
-                        int gameScareBird = games.indexOf(gameChoice);
-                        //Should get the game at the choice of the user and return the names and scores
-                        games.get(gameScareBird).getScores();
+                        this.master.output.println("Print ScareBird");
+                        Map<String, Integer> board = null;
+                        //for (ChallengeResponseGame game : currentGame) {
+                        // this.master.output.println();
+                        board = currentGame.getScores();
+                        if (board != null) {
+                            for (Map.Entry<String, Integer> entry : board.entrySet()) {
+                                this.master.output.println("reached good spoot");
+                                this.master.output.println(entry.getKey() + entry.getValue());
+                            }
+                        }
+                        //}
+
                         break;
                     default:
                         this.master.output.println("Unexpected Input Try Again!");
