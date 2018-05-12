@@ -1,15 +1,10 @@
-import java.io.IOException;
 import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Random;
-import java.lang.Error;
-
 
 
 //Must support mutlple clients at the same time  Some version of a Player Handler
@@ -24,9 +19,10 @@ import java.lang.Error;
 class ScoreboardServer{
     private ArrayList<ChallengeResponseGame> games;
     private ArrayList<ScoreboardClient> Players;
+
     public void startServer(int sslPort){
 
-            //Creates a server socket, bound to the specified port.
+        //Creates a server socket, bound to the specified port.
         ServerSocket server = null;
         try {
             server = new ServerSocket(sslPort);
@@ -34,45 +30,47 @@ class ScoreboardServer{
             e.printStackTrace();
         }
         //listens for activity on the server
-            while (true) {
-                Socket client = null;
-                try {
-                    if (server != null) {
-                        client = server.accept();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+        while (true) {
+            Socket client = null;
+            try {
+                if (server != null) {
+                    client = server.accept();
                 }
-                BufferedReader input = null;
-                try {
-                    if (client != null) {
-                        input = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                PrintWriter output = null;
-                try {
-                    if (client != null) {
-                        output = new PrintWriter(client.getOutputStream(),true);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                // WRITE ME: accept connection, extract streams and start thread
-                ScoreboardClient clientThread = new ScoreboardClient(input, output);
-                Thread t = new Thread(clientThread);
-                t.start();//memory error
-                // register callback
-                clientThread.registerCallback(clientThread);
-                Players.add(clientThread);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            BufferedReader input = null;
+            try {
+                if (client != null) {
+                    input = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            PrintWriter output = null;
+            try {
+                if (client != null) {
+                    output = new PrintWriter(client.getOutputStream(),true);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // WRITE ME: accept connection, extract streams and start thread
+            ScoreboardClient clientThread = new ScoreboardClient(input, output, games);
+            Thread t = new Thread(clientThread);
+            t.start();//memory error
+            // register callback
+            clientThread.registerCallback(clientThread);
+
+        }
 
     }
+
     //Arraylist to hold the list of ChallengeResponseGame
     ScoreboardServer(ArrayList<ChallengeResponseGame> games){
         this.games = games;
     }
+
     //setup for the ssl Connection
     //This will use the SSL with keystore and pasword
     //This will be ssl
