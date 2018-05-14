@@ -22,7 +22,7 @@ public class ScoreboardClient implements Runnable {
         this.input = input;
         this.output = output;
         this.games = games;
-
+        //pushme
     }
 
     void registerCallback(ScoreboardClient c) {
@@ -109,17 +109,29 @@ public class ScoreboardClient implements Runnable {
                         }
                         break;
                     case "scoreboard":
+
+                        this.master.output.println("Print ScareBird");
                         Map<String, Integer> board;
                         for (ChallengeResponseGame game : this.games) {
-                            this.master.output.println("retrieving scores for:" + game.gameId);
+                            this.master.output.println("retrieving scores");
                             board = game.getScores();
                         if (board != null) {
                             for (Map.Entry<String, Integer> entry : board.entrySet()) {
-                                this.master.output.println("Username: " + entry.getKey() + " Score: " + entry.getValue());
+                                this.master.output.println("reached good spoot");
+                                this.master.output.println(entry.getKey() + entry.getValue());
                             }
                         }
                         }
-
+                        break;
+                        
+                    case "question":
+                        
+                    for (ChallengeResponseGame game : this.games){
+                        for(int x=0; x<2;x++){
+                        this.master.output.println ("From: "+game.getId());
+                        this.master.output.println("Input needed: "+x+" Question: "+ game.getQuestions().get(x).getQuestion()); 
+                    }
+                }
                         break;
 
                     default:
