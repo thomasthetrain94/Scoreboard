@@ -22,6 +22,7 @@ public class ScoreboardClient implements Runnable {
         this.input = input;
         this.output = output;
         this.games = games;
+        //pushme
     }
 
     void registerCallback(ScoreboardClient c) {
