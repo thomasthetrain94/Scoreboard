@@ -109,16 +109,13 @@ public class ScoreboardClient implements Runnable {
                         }
                         break;
                     case "scoreboard":
-
-                        this.master.output.println("Print ScareBird");
                         Map<String, Integer> board;
                         for (ChallengeResponseGame game : this.games) {
-                            this.master.output.println("retrieving scores");
+                            this.master.output.println("retrieving scores for:" + game.gameId);
                             board = game.getScores();
                         if (board != null) {
                             for (Map.Entry<String, Integer> entry : board.entrySet()) {
-                                this.master.output.println("reached good spoot");
-                                this.master.output.println(entry.getKey() + entry.getValue());
+                                this.master.output.println("Username: " + entry.getKey() + " Score: " + entry.getValue());
                             }
                         }
                         }
