@@ -16,6 +16,7 @@ public class ScoreboardClient implements Runnable {
     //Interact with the questions from the challenge Response
     private ArrayList<ChallengeResponseGame> games;
     private ChallengeResponseGame currentGame = null;
+    private String quid;
 
     ScoreboardClient(BufferedReader input, PrintWriter output, ArrayList<ChallengeResponseGame> games) {
         this.input = input;
@@ -28,18 +29,27 @@ public class ScoreboardClient implements Runnable {
     }
 
     public void run() {
-        int port = 4001;
+        //Creates a server socket, bound to the specified port.
+        //should connect to the localhost on port 4001
+        this.master.output.println("User Name Selected");
+        //Username Declariation
+        String userName = null;
         try {
-
-            //Creates a server socket, bound to the specified port.
-            //should connect to the localhost on port 4001
-            this.master.output.println("User Name Selected");
-            //Username Declariation
-            String UserName = this.master.input.readLine();
-            //Add to array of people
-            this.master.output.println("User Name Selected");
-            while (true) {
-                String userInput = this.master.input.readLine().toLowerCase();
+            userName = this.master.input.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //Add to array of people
+        this.master.output.println("User Name Selected");
+        boolean done = false;
+        while (!done) {
+            String userInput = null;
+            try {
+                userInput = this.master.input.readLine().toLowerCase();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (userInput != null) {
                 switch (userInput) {
                     //Or this may have to be done with an IF Else statements which might
                     //be a cleaner solution
@@ -54,57 +64,71 @@ public class ScoreboardClient implements Runnable {
                         //The available games
                         this.master.output.println("crypto \n networking");
                         //Choosing the which game to play
-                        gameChoice = this.master.input.readLine().toLowerCase();
+                        try {
+                            gameChoice = this.master.input.readLine().toLowerCase();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         //the currentGame is created with the games array at that array
 
                         for (ChallengeResponseGame game : this.games) {
                             if (game.gameId.equals(gameChoice)) {
                                 currentGame = game;
+                                currentGame.addPlayer(userName);
                             }
                         }
                         //The available Questions
                         this.master.output.println("Question 1 or Question 2");
                         //Choosing the which question to play
-                        int qChoice = Integer.parseInt(this.master.input.readLine());
+                        int qChoice = 0;
+                        try {
+                            qChoice = Integer.parseInt(this.master.input.readLine());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         //The question is choosen
-                        String question = null;
+                        String question;
                         if (currentGame != null) {
                             question = currentGame.getQuestions().get(qChoice).getQuestion();
+                            quid = currentGame.getQuestions().get(qChoice).getId();
                             this.master.output.println(question);
                         }
                         //UserAnswer for the question
-                        String userAnswer = this.master.input.readLine();
-                        //checking the answer for the question of the current game by this.UserName
+                        String userAnswer = null;
+                        try {
+                            userAnswer = this.master.input.readLine();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        //checking the answer for the question of the current game by this.userName
                         if (currentGame != null) {
-                            currentGame.answer(UserName, question, userAnswer);
+                            if (userAnswer != null) {
+                                currentGame.answer(userName, quid, userAnswer.toUpperCase());
+                            }
                         }
                         break;
                     case "scoreboard":
 
                         this.master.output.println("Print ScareBird");
-                        Map<String, Integer> board = null;
-                        //for (ChallengeResponseGame game : currentGame) {
-                        // this.master.output.println();
-                        board = currentGame.getScores();
+                        Map<String, Integer> board;
+                        for (ChallengeResponseGame game : this.games) {
+                            this.master.output.println("retrieving scores");
+                            board = game.getScores();
                         if (board != null) {
                             for (Map.Entry<String, Integer> entry : board.entrySet()) {
                                 this.master.output.println("reached good spoot");
                                 this.master.output.println(entry.getKey() + entry.getValue());
                             }
                         }
-                        //}
+                        }
 
                         break;
+
                     default:
                         this.master.output.println("Unexpected Input Try Again!");
                 }
             }
-        } catch (IOException ex) {
-            System.err.println(String.format("Unable to connect to port %d", port));
-        } catch (java.lang.ArrayIndexOutOfBoundsException ex) {
-            System.err.println("Shit went to far");
-        } catch (java.lang.NullPointerException ex) {
-            System.err.println("Noll Ponter");
         }
+
     }
 }
